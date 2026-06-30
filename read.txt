@@ -1,0 +1,29 @@
+
+
+
+✅ Install and connect Redis.
+✅ Cache one GET endpoint using @Cacheable.
+✅ Configure JSON serialization.
+✅ Add TTLs.
+✅ Handle cache updates and eviction.
+✅ Explore advanced patterns like cache-aside, distributed locking, and pub/sub.
+
+
+
+docker exec -it mysql-db mysql -u springuser -p
+PWD :spring123
+SHOW DATABASES;
+
+
+docker exec -it redis-cache redis-cli
+PING
+KEYS *
+
+
+docker compose down -v
+
+docker compose up -d --build
+
+docker logs redis-cache
+docker exec -it product-service sh
+docker compose up -d --build --force-recreate
