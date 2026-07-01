@@ -45,7 +45,6 @@ Rate limiting
 
 
 
-
 docker exec -it mysql-db mysql -u springuser -p
 PWD :spring123
 SHOW DATABASES;
@@ -63,3 +62,28 @@ docker compose up -d --build
 docker logs redis-cache
 docker exec -it product-service sh
 docker compose up -d --build --force-recreate
+
+
+Redis Learning Roadmap
+
+Here's the path I'd recommend:
+
+Step	Topic	Status
+✅ 1	Redis Installation (Docker)	Done
+✅ 2	RedisTemplate Configuration	Done
+✅ 3	Cache-Aside Pattern	Done
+✅ 4	CRUD + Redis Synchronization	Done
+✅ 5	Cache HIT / MISS Logging	Done
+🔜 6	Redis TTL (Expire Keys)	Next
+🔜 7	Manual Cache Eviction	Next
+🔜 8	Cache All Products	Next
+🔜 9	Cache Search Results	Next
+🔜 10	Redis Hash Operations	Next
+🔜 11	Redis Lists	Next
+🔜 12	Redis Sets	Next
+🔜 13	Redis Sorted Sets	Next
+🔜 14	Redis Transactions	Next
+🔜 15	Distributed Locking	Next
+🔜 16	Pub/Sub Messaging	Next
+🔜 17	Redis Streams	Next
+🔜 18	Production Best Practices	Final

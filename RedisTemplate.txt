@@ -1,0 +1,45 @@
+
+
+productservice
+│
+├── config
+│      RedisTemplateConfig.java
+│
+├── controller
+│      ProductController.java
+│
+├── entity
+│      Product.java
+│
+├── repository
+│      ProductRepository.java
+│
+├── service
+│      ProductService.java
+│      ProductServiceImpl.java
+│      ProductRedisService.java
+│      ProductRedisServiceImpl.java
+│
+├── ProductServiceApplication.java
+│
+└── application.yml
+
+
+Your application becomes much cleaner:
+
+Spring Boot
+      │
+      ▼
+Creates RedisConnectionFactory
+      │
+      ▼
+RedisTemplateConfig
+      │
+      ▼
+RedisTemplate
+      │
+      ▼
+ProductRedisService
+      │
+      ▼
+ProductService
