@@ -14,4 +14,8 @@ public interface ProductRedisService {
 
     boolean exists(Long id);
 
+    void deleteAllProducts();
+
+    void clearCache();
+
 }

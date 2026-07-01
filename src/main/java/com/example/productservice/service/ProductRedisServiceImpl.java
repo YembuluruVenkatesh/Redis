@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -82,5 +84,37 @@ public class ProductRedisServiceImpl implements ProductRedisService {
                 RedisConstants.PRODUCT_KEY_PREFIX + id);
 
         return Boolean.TRUE.equals(exists);
+    }
+
+    @Override
+    public void deleteAllProducts() {
+
+        Set<String> keys = redisTemplate.keys("product:*");
+
+        if (keys != null && !keys.isEmpty()) {
+
+            redisTemplate.delete(keys);
+
+            log.info("Deleted {} product cache entries", keys.size());
+
+        } else {
+
+            log.info("No product cache entries found.");
+
+        }
+
+    }
+
+    @Override
+    public void clearCache() {
+
+        Objects.requireNonNull(
+                        redisTemplate.getConnectionFactory())
+                .getConnection()
+                .serverCommands()
+                .flushAll();
+
+        log.info("Entire Redis cache cleared.");
+
     }
 }

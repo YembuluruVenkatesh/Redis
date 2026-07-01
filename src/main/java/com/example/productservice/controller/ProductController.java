@@ -78,4 +78,22 @@ public class ProductController {
             """
                 .formatted(exists, ttl);
     }
+
+    @DeleteMapping("/cache")
+    public String clearProductCache() {
+
+        redisService.deleteAllProducts();
+
+        return "All product cache entries deleted.";
+
+    }
+
+    @DeleteMapping("/cache/all")
+    public String clearRedisCache() {
+
+        redisService.clearCache();
+
+        return "Entire Redis cache cleared.";
+
+    }
 }
