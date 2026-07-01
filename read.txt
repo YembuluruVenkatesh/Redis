@@ -1,12 +1,48 @@
 
-
-
 ✅ Install and connect Redis.
 ✅ Cache one GET endpoint using @Cacheable.
 ✅ Configure JSON serialization.
 ✅ Add TTLs.
 ✅ Handle cache updates and eviction.
 ✅ Explore advanced patterns like cache-aside, distributed locking, and pub/sub.
+
+
+Phase 1 (Completed)
+✅ Basic Redis caching using Spring Cache
+Phase 2 (Next)
+🔜 RedisTemplate (manual Redis operations)
+Cache HIT/MISS logging
+Manual cache-aside pattern
+Custom cache keys
+Per-key TTL
+Better control than annotations
+Phase 3
+🔜 Global Exception Handling (@RestControllerAdvice)
+Custom exceptions
+Standard API response model
+Phase 4
+🔜 DTOs and Model Mapping
+Request/Response DTOs
+Validation
+Mapping with MapStruct or manual mapping
+Phase 5
+🔜 Docker Compose enhancements
+Health checks with Spring Boot Actuator
+Graceful shutdown
+Environment-specific profiles
+Phase 6
+🔜 Unit Testing
+JUnit 5
+Mockito
+Cache testing
+Phase 7
+🔜 Production Redis
+Redis Sentinel
+Redis Cluster
+Pub/Sub
+Distributed locking
+Rate limiting
+
 
 
 
