@@ -1,6 +1,7 @@
 package com.example.productservice.controller;
 
 import com.example.productservice.entity.Product;
+import com.example.productservice.service.ProductRedisService;
 import com.example.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService service;
-
+    private final ProductRedisService redisService;
     @PostMapping
     public Product save(@RequestBody Product product) {
 
@@ -59,5 +60,22 @@ public class ProductController {
         service.delete(id);
 
         log.info("Product deleted successfully with ID: {}", id);
+    }
+
+    @GetMapping("/cache/{id}")
+    public String cacheInfo(@PathVariable Long id) {
+
+        boolean exists = redisService.exists(id);
+
+        Long ttl = redisService.getTTL(id);
+
+        return """
+            Product Cache Details
+            
+            Exists : %s
+            
+            TTL : %d seconds
+            """
+                .formatted(exists, ttl);
     }
 }

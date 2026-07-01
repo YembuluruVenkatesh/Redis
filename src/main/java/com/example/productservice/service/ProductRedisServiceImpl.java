@@ -1,33 +1,39 @@
 package com.example.productservice.service;
 
+import com.example.productservice.constant.RedisConstants;
 import com.example.productservice.entity.Product;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductRedisServiceImpl implements ProductRedisService {
 
-    private static final String PRODUCT_KEY = "product:";
-
     private final RedisTemplate<String, Product> redisTemplate;
 
     @Override
     public Product getProduct(Long id) {
 
-        String key = PRODUCT_KEY + id;
+        String key = RedisConstants.PRODUCT_KEY_PREFIX + id;
 
-        Product product = (Product) redisTemplate.opsForValue().get(key);
+        Product product = redisTemplate.opsForValue().get(key);
 
         if (product != null) {
+
+            Long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
+
             log.info("✅ Cache HIT : {}", key);
+            log.info("Remaining TTL : {} seconds", ttl);
+
         } else {
+
             log.info("❌ Cache MISS : {}", key);
+
         }
 
         return product;
@@ -36,21 +42,23 @@ public class ProductRedisServiceImpl implements ProductRedisService {
     @Override
     public void saveProduct(Product product) {
 
-        String key = PRODUCT_KEY + product.getId();
+        String key = RedisConstants.PRODUCT_KEY_PREFIX + product.getId();
 
         redisTemplate.opsForValue().set(
                 key,
                 product,
-                Duration.ofMinutes(10));
+                RedisConstants.PRODUCT_CACHE_TTL);
+
+        Long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
 
         log.info("Stored Product {} into Redis", product.getId());
-
+        log.info("TTL : {} seconds", ttl);
     }
 
     @Override
     public void deleteProduct(Long id) {
 
-        String key = PRODUCT_KEY + id;
+        String key = RedisConstants.PRODUCT_KEY_PREFIX + id;
 
         redisTemplate.delete(key);
 
@@ -58,4 +66,21 @@ public class ProductRedisServiceImpl implements ProductRedisService {
 
     }
 
+    @Override
+    public Long getTTL(Long id) {
+
+        return redisTemplate.getExpire(
+                RedisConstants.PRODUCT_KEY_PREFIX + id,
+                TimeUnit.SECONDS);
+
+    }
+
+    @Override
+    public boolean exists(Long id) {
+
+        Boolean exists = redisTemplate.hasKey(
+                RedisConstants.PRODUCT_KEY_PREFIX + id);
+
+        return Boolean.TRUE.equals(exists);
+    }
 }

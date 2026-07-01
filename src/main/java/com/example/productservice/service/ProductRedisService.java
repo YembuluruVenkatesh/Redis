@@ -10,4 +10,8 @@ public interface ProductRedisService {
 
     void deleteProduct(Long id);
 
+    Long getTTL(Long id);
+
+    boolean exists(Long id);
+
 }
