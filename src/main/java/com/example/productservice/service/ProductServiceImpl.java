@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = repository.save(product);
 
         redisService.saveProduct(savedProduct);
-
+        redisService.deleteAllProductsCache();
         log.info("Saved Product {} into Database", savedProduct.getId());
 
         return savedProduct;
@@ -57,7 +57,24 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Fetching all products from Database");
 
-        return repository.findAll();
+        //return repository.findAll();
+        List<Product> cachedProducts =
+                 redisService.getAllProducts();
+
+        if (cachedProducts != null) {
+
+            log.info("Returning Product List from Redis");
+
+            return cachedProducts;
+        }
+
+        log.info("Fetching Product List from Database");
+
+        List<Product> products = repository.findAll();
+
+        redisService.saveAllProducts(products);
+
+        return products;
     }
 
     @Override
@@ -73,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
         Product updated = repository.save(existing);
 
         redisService.saveProduct(updated);
-
+        redisService.deleteAllProductsCache();
         log.info("Updated Product {} in Database and Redis", id);
 
         return updated;
@@ -85,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
         repository.deleteById(id);
 
         redisService.deleteProduct(id);
-
+        redisService.deleteAllProductsCache();
         log.info("Deleted Product {} from Database and Redis", id);
 
     }

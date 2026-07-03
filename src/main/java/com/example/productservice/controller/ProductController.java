@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -37,6 +39,18 @@ public class ProductController {
         log.info("Returning product with ID: {}", id);
 
         return product;
+    }
+
+    @GetMapping
+    public List<Product> getAllProducts() {
+
+        log.info("Received request to fetch all products");
+
+        List<Product> products = service.getAllProducts();
+
+        log.info("Returning {} products", products.size());
+
+        return products;
     }
 
     @PutMapping("/{id}")

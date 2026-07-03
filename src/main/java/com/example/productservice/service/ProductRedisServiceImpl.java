@@ -6,24 +6,27 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductRedisServiceImpl implements ProductRedisService {
 
-    private final RedisTemplate<String, Product> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Product getProduct(Long id) {
 
         String key = RedisConstants.PRODUCT_KEY_PREFIX + id;
 
-        Product product = redisTemplate.opsForValue().get(key);
+        Product product = (Product) redisTemplate.opsForValue().get(key);
 
         if (product != null) {
 
@@ -116,5 +119,47 @@ public class ProductRedisServiceImpl implements ProductRedisService {
 
         log.info("Entire Redis cache cleared.");
 
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+
+        Object value = redisTemplate.opsForValue()
+                .get(RedisConstants.PRODUCT_LIST_KEY);
+
+        if (value != null) {
+
+            log.info("✅ Cache HIT : {}", RedisConstants.PRODUCT_LIST_KEY);
+
+            return objectMapper.convertValue(
+                    value,
+                    new TypeReference<List<Product>>() {}
+            );
+        }
+
+        log.info("❌ Cache MISS : {}", RedisConstants.PRODUCT_LIST_KEY);
+
+        return null;
+    }
+
+
+    @Override
+    public void saveAllProducts(List<Product> products) {
+
+        redisTemplate.opsForValue().set(
+                RedisConstants.PRODUCT_LIST_KEY,
+                products,
+                RedisConstants.PRODUCT_LIST_TTL
+        );
+
+        log.info("Stored Product List into Redis");
+    }
+
+    @Override
+    public void deleteAllProductsCache() {
+
+        redisTemplate.delete(RedisConstants.PRODUCT_LIST_KEY);
+
+        log.info("Deleted Product List Cache");
     }
 }
