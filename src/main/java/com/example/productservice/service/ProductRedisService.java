@@ -25,4 +25,10 @@ public interface ProductRedisService {
     void saveAllProducts(List<Product> products);
 
     void deleteAllProductsCache();
+
+    List<Product> getSearchResults(String keyword);
+
+    void saveSearchResults(String keyword, List<Product> products);
+
+    void deleteSearchCache();
 }

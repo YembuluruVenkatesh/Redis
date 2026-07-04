@@ -162,4 +162,58 @@ public class ProductRedisServiceImpl implements ProductRedisService {
 
         log.info("Deleted Product List Cache");
     }
+
+    @Override
+    public List<Product> getSearchResults(String keyword) {
+
+        String key = RedisConstants.SEARCH_KEY_PREFIX + keyword.toLowerCase();
+
+        Object value = redisTemplate.opsForValue().get(key);
+
+        if (value != null) {
+
+            log.info("✅ Search Cache HIT : {}", key);
+
+            return objectMapper.convertValue(
+                    value,
+                    new TypeReference<List<Product>>() {});
+        }
+
+        log.info("❌ Search Cache MISS : {}", key);
+
+        return null;
+    }
+
+    @Override
+    public void saveSearchResults(String keyword,
+                                  List<Product> products) {
+
+        String key = RedisConstants.SEARCH_KEY_PREFIX + keyword.toLowerCase();
+
+        redisTemplate.opsForValue().set(
+                key,
+                products,
+                RedisConstants.SEARCH_CACHE_TTL
+        );
+
+        log.info("Stored Search Result '{}' into Redis", keyword);
+    }
+
+    @Override
+    public void deleteSearchCache() {
+
+        Set<String> keys =
+                redisTemplate.keys(RedisConstants.SEARCH_KEY_PREFIX + "*");
+
+        if (keys != null && !keys.isEmpty()) {
+
+            redisTemplate.delete(keys);
+
+            log.info("Deleted {} Search Cache Entries", keys.size());
+
+        } else {
+
+            log.info("No Search Cache Found");
+        }
+    }
 }

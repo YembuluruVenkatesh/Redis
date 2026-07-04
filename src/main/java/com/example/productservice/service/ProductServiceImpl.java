@@ -106,4 +106,27 @@ public class ProductServiceImpl implements ProductService {
         log.info("Deleted Product {} from Database and Redis", id);
 
     }
+
+    @Override
+    public List<Product> searchProducts(String keyword) {
+
+        List<Product> cachedProducts =
+                redisService.getSearchResults(keyword);
+
+        if (cachedProducts != null) {
+
+            log.info("Returning Search Result '{}' from Redis", keyword);
+
+            return cachedProducts;
+        }
+
+        log.info("Searching '{}' in Database", keyword);
+
+        List<Product> products =
+                repository.findByNameContainingIgnoreCase(keyword);
+
+        redisService.saveSearchResults(keyword, products);
+
+        return products;
+    }
 }

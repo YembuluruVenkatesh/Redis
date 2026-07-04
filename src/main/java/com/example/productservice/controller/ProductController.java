@@ -1,6 +1,8 @@
 package com.example.productservice.controller;
 
+import com.example.productservice.dto.PriceRequest;
 import com.example.productservice.entity.Product;
+import com.example.productservice.service.ProductHashService;
 import com.example.productservice.service.ProductRedisService;
 import com.example.productservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class ProductController {
 
     private final ProductService service;
     private final ProductRedisService redisService;
+    private final ProductHashService productHashService;
     @PostMapping
     public Product save(@RequestBody Product product) {
 
@@ -109,5 +112,53 @@ public class ProductController {
 
         return "Entire Redis cache cleared.";
 
+    }
+
+    @GetMapping("/search")
+    public List<Product> searchProducts(
+            @RequestParam String name) {
+
+        log.info("Searching Product : {}", name);
+
+        List<Product> products =
+                service.searchProducts(name);
+
+        log.info("Found {} products", products.size());
+
+        return products;
+    }
+
+    @PostMapping("/hash")
+    public Product saveHash(@RequestBody Product product) {
+
+        Product saved = service.save(product);
+
+        productHashService.save(saved);
+
+        return saved;
+    }
+
+    @GetMapping("/hash/{id}")
+    public Product getHash(@PathVariable Long id) {
+
+        return productHashService.get(id);
+    }
+
+    @PatchMapping("/hash/{id}/price")
+    public String updatePrice(
+            @PathVariable Long id,
+            @RequestBody PriceRequest request) {
+
+        productHashService.updatePrice(id, request.getPrice());
+
+        return "Price Updated";
+    }
+
+    @DeleteMapping("/hash/{id}")
+    public String deleteHash(@PathVariable Long id) {
+
+        productHashService.delete(id);
+
+        return "Hash Deleted";
     }
 }
