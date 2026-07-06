@@ -2,14 +2,14 @@ package com.example.productservice.controller;
 
 import com.example.productservice.dto.PriceRequest;
 import com.example.productservice.entity.Product;
-import com.example.productservice.service.ProductHashService;
-import com.example.productservice.service.ProductRedisService;
-import com.example.productservice.service.ProductService;
+import com.example.productservice.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/products")
@@ -20,6 +20,10 @@ public class ProductController {
     private final ProductService service;
     private final ProductRedisService redisService;
     private final ProductHashService productHashService;
+    private final ProductRecentService recentService;
+    private final ProductFavoriteService favoriteService;
+    private final ProductRankingService rankingService;
+
     @PostMapping
     public Product save(@RequestBody Product product) {
 
@@ -160,5 +164,88 @@ public class ProductController {
         productHashService.delete(id);
 
         return "Hash Deleted";
+    }
+
+    @GetMapping("/recent")
+    public List<Object> recentProducts() {
+
+        return recentService.getRecentProducts();
+
+    }
+
+    @DeleteMapping("/recent")
+    public String clearRecent() {
+
+        recentService.clearRecentProducts();
+
+        return "Recent Products Cleared";
+    }
+
+    @PostMapping("/{userId}/favorites/{productId}")
+    public String addFavorite(
+            @PathVariable Long userId,
+            @PathVariable Long productId) {
+
+        favoriteService.addFavorite(userId, productId);
+
+        return "Product added to favorites";
+    }
+    @DeleteMapping("/{userId}/favorites/{productId}")
+    public String removeFavorite(
+            @PathVariable Long userId,
+            @PathVariable Long productId) {
+
+        favoriteService.removeFavorite(userId, productId);
+
+        return "Product removed from favorites";
+    }
+    @GetMapping("/{userId}/favorites")
+    public Set<Object> favorites(
+            @PathVariable Long userId) {
+
+        return favoriteService.getFavorites(userId);
+    }
+    @GetMapping("/{userId}/favorites/{productId}")
+    public boolean isFavorite(
+            @PathVariable Long userId,
+            @PathVariable Long productId) {
+
+        return favoriteService.isFavorite(userId, productId);
+    }
+    @GetMapping("/{userId}/favorites/count")
+    public Long count(
+            @PathVariable Long userId) {
+
+        return favoriteService.totalFavorites(userId);
+    }
+
+//    @GetMapping("/ranking")
+//    public Set<Object> topProducts() {
+//        return rankingService.topProducts(10);
+//    }
+
+    @GetMapping("/ranking")
+    public Set<ZSetOperations.TypedTuple<Object>> topProducts() {
+        return rankingService.topProducts(10);
+    }
+    @GetMapping("/ranking/{id}/score")
+    public Double score(@PathVariable Long id) {
+        return rankingService.getScore(id);
+    }
+
+    @GetMapping("/ranking/{id}/rank")
+    public Long rank(@PathVariable Long id) {
+
+        return rankingService.getRank(id);
+
+    }
+
+    @DeleteMapping("/ranking/{id}")
+    public String deleteRanking(
+            @PathVariable Long id) {
+
+        rankingService.removeProduct(id);
+
+        return "Removed";
     }
 }

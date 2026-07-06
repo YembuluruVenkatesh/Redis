@@ -16,6 +16,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final ProductRedisService redisService;
+    private final ProductRecentService recentService;
+    private final ProductRankingService rankingService;
 
     @Override
     public Product save(Product product) {
@@ -37,7 +39,8 @@ public class ProductServiceImpl implements ProductService {
         if (cachedProduct != null) {
 
             log.info("Returning Product {} from Redis", id);
-
+            recentService.addRecentProduct(id);
+            rankingService.incrementView(id);
             return cachedProduct;
         }
 
@@ -48,7 +51,8 @@ public class ProductServiceImpl implements ProductService {
                         new ProductNotFoundException(id));
 
         redisService.saveProduct(product);
-
+        recentService.addRecentProduct(id);
+        rankingService.incrementView(id);
         return product;
     }
 
