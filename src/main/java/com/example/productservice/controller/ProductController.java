@@ -23,6 +23,7 @@ public class ProductController {
     private final ProductRecentService recentService;
     private final ProductFavoriteService favoriteService;
     private final ProductRankingService rankingService;
+    private final RedisTransactionService transactionService;
 
     @PostMapping
     public Product save(@RequestBody Product product) {
@@ -247,5 +248,13 @@ public class ProductController {
         rankingService.removeProduct(id);
 
         return "Removed";
+    }
+
+    @PostMapping("/transaction")
+    public String transaction() {
+
+        transactionService.executeTransaction();
+
+        return "Transaction Executed Successfully";
     }
 }

@@ -108,7 +108,7 @@ LTRIM	Keep only last N items
 
 Redis Set Commands : Command	Description
 
-SADD	Add element
+SADD	        Add element
 SMEMBERS	Get all values
 SISMEMBER	Check if value exists
 SCARD	Count elements
@@ -116,3 +116,70 @@ SREM	Remove element
 SUNION	Union of sets
 SINTER	Intersection
 SDIFF	Difference
+
+Redis Sorted Sets Commands : Command Purpose
+ZADD	Add member
+ZINCRBY	Increase score
+ZRANGE	Lowest → Highest
+ZREVRANGE	Highest → Lowest
+ZSCORE	Get score
+ZRANK	Rank
+ZREVRANK	Reverse Rank
+ZREM	Remove
+
+Redis Transaction :
+
+Where are Redis Transactions used?
+1. Banking
+Debit Account -> Credit Account -> Save Audit
+2. E-Commerce
+Decrease Stock -> Increase Sales -> Add Order-> Update Inventory
+3. Gaming
+Increase Score -> Update Leaderboard -> Save Achievement
+4. User Registration
+Create User -> Assign Role -> Save Session ->  Increment User Count
+
+http://localhost:8080/products/transaction  - > Transaction Executed Successfully
+docker exec -it redis-cache redis-cli
+KEYS *
+
+transaction:name
+transaction:version
+transaction:counter
+
+GET transaction:version   : 1.0
+GET transaction:counter   : 
+
+Client
+
+      │
+
+      ▼
+
+Controller
+
+      │
+
+      ▼
+
+Transaction Service
+
+      │
+
+      ▼
+
+MULTI
+
+SET name
+
+SET version
+
+INCR counter
+
+EXEC
+
+      │
+
+      ▼
+
+Redis
