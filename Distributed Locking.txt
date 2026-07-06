@@ -1,0 +1,122 @@
+Distributed Locking:
+
+Current Stock: iPhone = 1
+
+Without Lock: 
+
+Request A
+        \
+         \
+          Reads Stock = 1
+                |
+                |-------------------+
+                                    |
+Request B                          |
+        \                          |
+         \                         |
+          Reads Stock = 1          |
+                |                  |
+                +------------------+
+                       Both Update
+                       Stock = 0
+
+Both Orders Succeed ❌
+
+You just sold 2 phones while only 1 existed.
+
+----------------------------------------------------------------------------------------------------------------
+
+With Redis Lock:
+
+
+Request A
+      |
+Acquire Lock
+      |
+Update Stock
+      |
+Release Lock
+
+-----------------------------
+
+Request B
+      |
+Lock Already Exists
+      |
+Wait / Reject
+
+Only one request updates the stock.
+
+-------------------------------------------------------------------------------------------------------------------
+
+Redis Lock Mechanism
+
+Redis uses : 
+
+SET lock_key uniqueValue NX PX 10000
+
+Meaning
+
+SET Create key ->  NX  -> Only if it does NOT exist --> PX  -> Expiration Time
+
+Example
+
+SET product_lock abc123 NX PX 10000 
+
+If key already exists  -- Redis returns  -- null -- Lock acquisition fails.
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Testing : 
+
+Open two Postman tabs.
+
+Call simultaneously POST /products/lock/1
+
+First request :  Processing Product 1
+
+Second request : Another request is already processing Product 1
+
+Logs
+
+Lock Acquired : lock:product:1
+Processing Product 1
+Lock Already Exists : lock:product:1
+Lock Released : lock:product:1
+
+Verify in Redis
+
+While the first request is sleeping
+Run - > KEYS lock:*
+Output -> lock:product:1
+Check TTL -> TTL lock:product:1  -> 26 
+
+After completion
+KEYS lock:*  -> (empty)
+The lock has been released.
+
+----------------------------------------------------------------------------------------------------
+
+Real-World Use Cases:
+ 
+E-Commerce ->  Prevent overselling inventory
+Payment Systems -> Prevent duplicate payment processing
+Coupon Redemption -> Ensure coupon is redeemed only once
+Ticket Booking -> Prevent two users from booking the same seat
+Scheduled Jobs -> Only one application instance executes a cron job
+
+Production Lock Flow: 
+
+Generate UUID
+        │
+        ▼
+SET lockKey UUID NX PX 30000
+        │
+        ▼
+Business Logic
+        │
+        ▼
+Compare UUID
+        │
+        ▼
+Delete Lock

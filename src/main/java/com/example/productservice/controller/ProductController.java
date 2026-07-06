@@ -24,6 +24,7 @@ public class ProductController {
     private final ProductFavoriteService favoriteService;
     private final ProductRankingService rankingService;
     private final RedisTransactionService transactionService;
+    private final RedisLockService lockService;
 
     @PostMapping
     public Product save(@RequestBody Product product) {
@@ -256,5 +257,32 @@ public class ProductController {
         transactionService.executeTransaction();
 
         return "Transaction Executed Successfully";
+    }
+
+    @PostMapping("/lock/{id}")
+    public String testLock(@PathVariable Long id)
+            throws InterruptedException {
+
+        String key = "lock:product:" + id;
+
+        if (!lockService.acquireLock(key)) {
+
+            return "Another request is already processing Product " + id;
+        }
+
+        try {
+
+            log.info("Processing Product {}", id);
+
+            Thread.sleep(10000);
+
+            return "Processing Completed";
+
+        } finally {
+
+            lockService.releaseLock(key);
+
+        }
+
     }
 }
