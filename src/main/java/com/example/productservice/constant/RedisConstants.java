@@ -18,4 +18,6 @@ public final class RedisConstants {
     // Search Cache
     public static final String SEARCH_KEY_PREFIX = "search:";
     public static final Duration SEARCH_CACHE_TTL = Duration.ofMinutes(2);
+
+    public static final String PRODUCT_CHANNEL = "product-channel";
 }

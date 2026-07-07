@@ -18,6 +18,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRedisService redisService;
     private final ProductRecentService recentService;
     private final ProductRankingService rankingService;
+    private final RedisPublisherService publisherService;
 
     @Override
     public Product save(Product product) {
@@ -26,6 +27,9 @@ public class ProductServiceImpl implements ProductService {
 
         redisService.saveProduct(savedProduct);
         redisService.deleteAllProductsCache();
+        log.info("Saved Product {} into Database", savedProduct.getId());
+
+        publisherService.publish("Product Created : "+ savedProduct.getName());
         log.info("Saved Product {} into Database", savedProduct.getId());
 
         return savedProduct;
@@ -96,6 +100,7 @@ public class ProductServiceImpl implements ProductService {
         redisService.saveProduct(updated);
         redisService.deleteAllProductsCache();
         log.info("Updated Product {} in Database and Redis", id);
+        publisherService.publish("Product Updated : "+ updated.getName());
 
         return updated;
     }
@@ -108,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
         redisService.deleteProduct(id);
         redisService.deleteAllProductsCache();
         log.info("Deleted Product {} from Database and Redis", id);
-
+        publisherService.publish("Product Deleted : " + id);
     }
 
     @Override

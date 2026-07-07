@@ -1,0 +1,89 @@
+With Pub/Sub, Redis becomes a communication channel.
+
+Application A
+      │
+ Publish Event
+      │
+      ▼
+     Redis
+      │
+      ▼
+Application B
+
+Application C
+
+Application D
+
+One publisher → Many subscribers.
+
+--------------------------------------------------------------------------------
+
+ Microservice Architecture
+
+
+               Product Service
+                     │
+                     │
+          Product Created Event
+                     │
+                     ▼
+                Redis Pub/Sub
+      ┌────────────┼─────────────┐
+      ▼            ▼             ▼
+ Inventory     Notification    Analytics
+   Service        Service       Service
+
+
+----------------------------------------------------------------------------------
+
+Limitation of Redis Pub/Sub
+
+One important thing to understand:   Redis Pub/Sub is fire-and-forget.
+
+If no subscriber is listening when a message is published:
+
+Publisher
+
+↓
+
+Redis
+
+↓
+
+❌ Nobody Listening
+
+↓
+
+Message Lost
+
+The message is not stored.
+
+If a subscriber starts later, it cannot receive old messages.
+
+This is why Pub/Sub is best for real-time notifications where losing an occasional message is acceptable.
+
+
+When to use Pub/Sub
+
+✅ Notifications
+
+✅ Live dashboards
+
+✅ Cache invalidation across services
+
+✅ WebSocket updates
+
+✅ Broadcasting events
+
+
+When NOT to use Pub/Sub
+
+❌ Order Processing
+
+❌ Payment Processing
+
+❌ Financial Transactions
+
+❌ Inventory Reservation
+
+Those require guaranteed delivery and persistence.

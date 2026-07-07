@@ -93,6 +93,14 @@ Spring Cache Abstraction (@Cacheable, @CacheEvict, @CachePut)
 Cache Preloading (Warm-up)
 Monitoring Redis
 Performance optimization and best practices
+🔜 Redis Pub/Sub
+🔜 Redis Streams
+🔜 Distributed Locking
+🔜 Rate Limiting
+🔜 Session Management
+🔜 Redis Cluster & Sentinel
+🔜 Production Best Practices
+
 
 
 Redis List Commands : Command	Purpose
