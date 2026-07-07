@@ -1,0 +1,138 @@
+What is Redis Stream : 
+
+Think of Pub/Sub.
+
+Publisher
+↓
+Subscriber
+
+If subscriber is OFF...
+
+❌ Message Lost
+
+Example
+
+Publisher -----> Redis -----> Subscriber
+
+Subscriber Down
+
+Message Gone Forever
+
+----------------------------------------------------------------------------------
+
+Streams solve this.
+
+Instead of immediately sending,
+
+Redis stores every message.
+
+Publisher
+
+↓
+
+Redis Stream
+---------------------
+1 Product Created
+2 Product Updated
+3 Product Deleted
+4 Product Created
+---------------------
+
+↓
+
+Consumer
+
+Nothing gets lost.
+
+----------------------------------------------------------------------------------------
+Real Companies
+
+Almost every large system uses something similar.
+
+Amazon
+Uber
+Netflix
+Swiggy
+Zomato
+Paytm
+Flipkart
+
+Event Driven Architecture : 
+
+Kafka
+
+RabbitMQ
+
+Redis Streams
+
+are all based on this idea.
+
+-----------------------------------------------------------------------------------------------
+
+Architecture
+                ProductController
+                       |
+                       |
+                 ProductService
+                       |
+          --------------------------
+          |                        |
+          |                        |
+      MySQL                   Redis Stream
+                                   |
+                              product-events
+                                   |
+                           Stream Consumer
+                                   |
+                           ProductEventListener
+
+Exactly like Pub/Sub,
+
+except Redis stores everything.
+
+----------------------------------------------------------------------------------------------
+
+Stream Flow : 
+
+
+POST /products
+
+↓
+
+Save MySQL
+
+↓
+
+Save Cache
+
+↓
+
+Publish Stream Event
+
+↓
+
+Redis Stream stores event
+
+↓
+
+Consumer receives event
+
+↓
+
+Logs message
+
+--------------------------------------------------------------------------------------------------
+
+List<MapRecord<String, Object, Object>> records =
+        stream.read(
+                StreamOffset.create(
+                        RedisStreamConstants.PRODUCT_STREAM,
+                        ReadOffset.latest()
+                )
+        );
+
+ReadOffset.latest()   -- Read only the newest messages.
+
+ReadOffset.from("0-0")  -- want to replay everything from the beginning
+
+ReadOffset.lastConsumed() -- Read only the messages that this Consumer Group has NOT processed yet.

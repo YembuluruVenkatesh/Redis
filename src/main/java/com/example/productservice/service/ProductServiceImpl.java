@@ -19,6 +19,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRecentService recentService;
     private final ProductRankingService rankingService;
     private final RedisPublisherService publisherService;
+    private final ProductStreamPublisher streamPublisher;
 
     @Override
     public Product save(Product product) {
@@ -30,6 +31,9 @@ public class ProductServiceImpl implements ProductService {
         log.info("Saved Product {} into Database", savedProduct.getId());
 
         publisherService.publish("Product Created : "+ savedProduct.getName());
+        log.info("Saved Product {} into Database", savedProduct.getId());
+
+        streamPublisher.publishProductCreated(savedProduct);
         log.info("Saved Product {} into Database", savedProduct.getId());
 
         return savedProduct;
