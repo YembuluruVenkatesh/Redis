@@ -46,3 +46,103 @@ Status = Pending
 
 When the service restarts, it can continue processing.
 
+-----------------------------------------------------------------------
+
+Retry Failed Messages
+
+This is where Redis Streams become truly powerful.
+
+Current Flow
+Publisher
+      │
+      ▼
+Redis Stream
+      │
+      ▼
+Consumer Group
+      │
+      ▼
+Business Logic
+      │
+      ▼
+ACK
+
+Suppose the application crashes here:
+
+Publisher
+      │
+      ▼
+Consumer
+      │
+      ▼
+Business Logic
+      │
+      X
+    Crash
+
+Without Redis Streams
+
+Message Lost ❌
+
+With Redis Streams
+
+Message
+
+↓
+
+Pending Entries List
+
+↓
+
+Retry Later
+
+↓
+
+ACK
+
+↓
+
+Done
+
+--------------------------------------------------------------------
+
+One important note: 
+
+
+The retry implementation above is great for learning, but it's not how production systems recover messages.
+
+In production, Redis provides:
+
+XPENDING → inspect pending messages
+XCLAIM → transfer ownership of a pending message to another consumer
+XAUTOCLAIM → automatically claim idle pending messages
+
+Those commands solve cases like:
+
+Consumer-1
+
+↓
+
+Receives Message
+
+↓
+
+Crashes
+
+↓
+
+Consumer-2
+
+↓
+
+Claims Message
+
+↓
+
+Processes
+
+↓
+
+ACK
+
+This is the production-grade approach.

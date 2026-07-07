@@ -27,6 +27,7 @@ public class ProductController {
     private final RedisTransactionService transactionService;
     private final RedisLockService lockService;
     private final StreamMonitoringService streamMonitoringService;
+    private final StreamRetryService streamRetryService;
 
     @PostMapping
     public Product save(@RequestBody Product product) {
@@ -292,6 +293,15 @@ public class ProductController {
     public PendingMessageInfo pendingMessages() {
 
         return streamMonitoringService.getPendingMessages();
+
+    }
+
+    @PostMapping("/stream/retry")
+    public String retryPendingMessages() {
+
+        streamRetryService.retryPendingMessages();
+
+        return "Retry completed.";
 
     }
 }
