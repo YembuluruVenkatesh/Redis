@@ -1,0 +1,48 @@
+Message Acknowledgement (XACK): 
+
+Publisher
+      │
+      ▼
+Redis Stream
+      │
+      ▼
+Consumer Group
+      │
+      ▼
+Process Message
+      │
+      ▼
+XACK
+      │
+      ▼
+Redis removes it from Pending Entries List
+
+------------------------------------------------------------------------
+
+XPENDING (Pending Entries List): 
+
+Why is XPENDING useful?
+
+Suppose your application processes payments.
+
+Receive Payment Event
+        │
+        ▼
+Debit Customer
+        │
+        ▼
+💥 Server Crash
+
+Without Redis Streams:
+
+❌ Payment event is lost.
+
+With Redis Streams:
+
+Pending Entries List
+
+Payment Event
+Status = Pending
+
+When the service restarts, it can continue processing.
+

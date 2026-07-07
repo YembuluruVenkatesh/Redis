@@ -1,5 +1,6 @@
 package com.example.productservice.controller;
 
+import com.example.productservice.dto.PendingMessageInfo;
 import com.example.productservice.dto.PriceRequest;
 import com.example.productservice.entity.Product;
 import com.example.productservice.service.*;
@@ -25,6 +26,7 @@ public class ProductController {
     private final ProductRankingService rankingService;
     private final RedisTransactionService transactionService;
     private final RedisLockService lockService;
+    private final StreamMonitoringService streamMonitoringService;
 
     @PostMapping
     public Product save(@RequestBody Product product) {
@@ -283,6 +285,13 @@ public class ProductController {
             lockService.releaseLock(key);
 
         }
+
+    }
+
+    @GetMapping("/stream/pending")
+    public PendingMessageInfo pendingMessages() {
+
+        return streamMonitoringService.getPendingMessages();
 
     }
 }

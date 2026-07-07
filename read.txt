@@ -85,21 +85,18 @@ Step	Topic	Status
 🔜 14	Redis Transactions	Next
 🔜 15	Distributed Locking	Next
 🔜 16	Pub/Sub Messaging	Next
-🔜 17	Redis Streams	Next
-🔜 18	Production Best Practices	Final
+🔜 17	Redis Streams ( XACK (Completed) ->  XPENDING (Inspect Pending Messages) -> Retry Failed Messages  -> XCLAIM / XAUTOCLAIM  -> Dead Letter Queue (DLQ))
+implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry handling. These features are what distinguish a demo from a robust event-processing system
+🔜 18 Rate Limiting
+🔜 19 Session Management / Session Storage
+🔜 20 Redis Cluster & Sentinel
+🔜 21 Cache Preloading (Warm-up)
+🔜 22 Monitoring Redis
+🔜 23 Redis Cluster & Sentinel
+🔜 24 Production Best Practices	Final OR Performance optimization and best practices
 
-Session Storage
-Spring Cache Abstraction (@Cacheable, @CacheEvict, @CachePut)
-Cache Preloading (Warm-up)
-Monitoring Redis
-Performance optimization and best practices
-🔜 Redis Pub/Sub
-🔜 Redis Streams
-🔜 Distributed Locking
-🔜 Rate Limiting
-🔜 Session Management
-🔜 Redis Cluster & Sentinel
-🔜 Production Best Practices
+
+The next logical step is to make your Streams production-ready by implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry handling. These features are what distinguish a demo from a robust event-processing system.
 
 
 
