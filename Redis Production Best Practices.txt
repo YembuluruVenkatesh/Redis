@@ -1,0 +1,592 @@
+===========================================================
+            REDIS PRODUCTION BEST PRACTICES
+===========================================================
+
+1. Use Redis only for Fast Data
+--------------------------------
+✔ Cache
+✔ Sessions
+✔ Rate Limiting
+✔ Leaderboards
+✔ Pub/Sub
+✔ Streams
+
+Never store permanent business data only in Redis.
+
+Database
+     ↓
+Redis Cache
+
+Redis is not your primary database.
+
+------------------------------------------------------------
+
+2. Always Configure TTL
+-----------------------
+
+Avoid storing cache forever.
+
+Good
+
+Product
+TTL = 5 minutes
+
+Session
+TTL = 30 minutes
+
+OTP
+TTL = 2 minutes
+
+Bad
+
+TTL = Infinite
+
+Reason
+
+Memory keeps growing.
+
+------------------------------------------------------------
+
+3. Cache Only Frequently Accessed Data
+--------------------------------------
+
+Good
+
+Products
+
+Categories
+
+Configuration
+
+Dashboard
+
+Bad
+
+Audit Logs
+
+Invoices
+
+Payments
+
+Huge Reports
+
+------------------------------------------------------------
+
+4. Use Proper Key Naming
+-------------------------
+
+Bad
+
+1
+100
+abc
+
+Good
+
+product:1
+
+product:list
+
+user:101
+
+session:12345
+
+order:500
+
+rate:192.168.1.10
+
+Very easy to maintain.
+
+------------------------------------------------------------
+
+5. Separate Keys by Prefix
+--------------------------
+
+product:*
+
+order:*
+
+customer:*
+
+session:*
+
+stream:*
+
+lock:*
+
+This makes deleting data safer.
+
+Example
+
+DEL product:*
+
+instead of deleting everything.
+
+------------------------------------------------------------
+
+6. Use JSON Serialization
+--------------------------
+
+Never store Java objects using JDK serialization.
+
+Use
+
+GenericJackson2JsonRedisSerializer
+
+Advantages
+
+✔ Human readable
+
+✔ Language independent
+
+✔ Smaller size
+
+✔ Better debugging
+
+------------------------------------------------------------
+
+7. Cache Null Values Carefully
+------------------------------
+
+If database returns null
+
+Option 1
+
+Don't cache
+
+or
+
+Option 2
+
+Cache null for few seconds
+
+Avoids Cache Penetration.
+
+------------------------------------------------------------
+
+8. Avoid Huge Values
+--------------------
+
+Don't store
+
+100 MB Object
+
+Instead
+
+Split
+
+Product
+
+Product Images
+
+Product Reviews
+
+Product Prices
+
+Different keys
+
+------------------------------------------------------------
+
+9. Compress Large Objects
+--------------------------
+
+Large JSON
+
+↓
+
+Compress
+
+↓
+
+Store
+
+Saves memory.
+
+------------------------------------------------------------
+
+10. Enable Eviction Policy
+--------------------------
+
+Example
+
+maxmemory-policy allkeys-lru
+
+Redis automatically removes
+
+Least Recently Used keys.
+
+------------------------------------------------------------
+
+11. Monitor Hit Ratio
+---------------------
+
+Good
+
+95%
+
+Excellent
+
+98%
+
+Bad
+
+50%
+
+If hit ratio is low
+
+Your cache is useless.
+
+------------------------------------------------------------
+
+12. Use Distributed Lock
+------------------------
+
+Avoid
+
+Double Payment
+
+Duplicate Order
+
+Multiple Inventory Updates
+
+Use
+
+SET NX EX
+
+or
+
+Redisson Lock
+
+------------------------------------------------------------
+
+13. Use Streams Instead of Pub/Sub
+----------------------------------
+
+Pub/Sub
+
+Fire and Forget
+
+No retry
+
+No ACK
+
+No persistence
+
+Streams
+
+Persistent
+
+Consumer Groups
+
+ACK
+
+Retry
+
+Pending List
+
+Production systems prefer Streams.
+
+------------------------------------------------------------
+
+14. Always ACK Stream Messages
+------------------------------
+
+Read Message
+
+↓
+
+Process
+
+↓
+
+ACK
+
+Otherwise
+
+Pending Entries List grows forever.
+
+------------------------------------------------------------
+
+15. Monitor Pending Messages
+----------------------------
+
+XPENDING
+
+Watch
+
+Pending Count
+
+Idle Time
+
+Consumer Name
+
+Retry failed messages.
+
+------------------------------------------------------------
+
+16. Rate Limit Public APIs
+--------------------------
+
+Login
+
+OTP
+
+Password Reset
+
+Search APIs
+
+Payment APIs
+
+Protects server from abuse.
+
+------------------------------------------------------------
+
+17. Store Sessions in Redis
+---------------------------
+
+Good
+
+Multi-server deployment
+
+Server A
+
+↓
+
+Redis
+
+↓
+
+Server B
+
+User remains logged in.
+
+------------------------------------------------------------
+
+18. Warm Cache During Startup
+-----------------------------
+
+Application Starts
+
+↓
+
+Load Products
+
+↓
+
+Cache
+
+↓
+
+Fast First Request
+
+------------------------------------------------------------
+
+19. Monitor Redis
+-----------------
+
+Memory
+
+Clients
+
+OPS/sec
+
+Hit Ratio
+
+Evicted Keys
+
+Expired Keys
+
+Latency
+
+------------------------------------------------------------
+
+20. Secure Redis
+----------------
+
+Never expose Redis publicly.
+
+Use
+
+Password
+
+Firewall
+
+Private Network
+
+TLS (Production)
+
+------------------------------------------------------------
+
+21. Backup Redis
+----------------
+
+Enable
+
+RDB Snapshot
+
+or
+
+AOF
+
+Never rely only on memory.
+
+------------------------------------------------------------
+
+22. Separate Cache from Database
+--------------------------------
+
+Bad
+
+Redis stores everything forever
+
+Good
+
+Database
+
+↓
+
+Redis Cache
+
+↓
+
+Application
+
+Database remains source of truth.
+
+------------------------------------------------------------
+
+23. Avoid KEYS *
+---------------
+
+Bad
+
+KEYS *
+
+Blocks Redis
+
+Good
+
+SCAN
+
+Used in production.
+
+------------------------------------------------------------
+
+24. Use Connection Pooling
+--------------------------
+
+Lettuce
+
+Connection Pool
+
+Reduces latency
+
+Better throughput
+
+------------------------------------------------------------
+
+25. Monitor Slow Commands
+-------------------------
+
+Redis Slow Log
+
+Find
+
+Heavy commands
+
+Large queries
+
+Optimize them.
+
+------------------------------------------------------------
+
+26. Set Memory Limits
+---------------------
+
+Example
+
+maxmemory 2GB
+
+Redis never consumes entire server RAM.
+
+------------------------------------------------------------
+
+27. Separate Redis Instances
+----------------------------
+
+Production
+
+Redis Cache
+
+Redis Session
+
+Redis Streams
+
+Redis Queue
+
+Different instances if workload is heavy.
+
+------------------------------------------------------------
+
+28. Avoid Cache Stampede
+------------------------
+
+When cache expires
+
+1000 users
+
+↓
+
+Database
+
+↓
+
+Crash
+
+Solutions
+
+✔ Random TTL
+
+✔ Lock
+
+✔ Preload Cache
+
+------------------------------------------------------------
+
+29. Handle Cache Miss Gracefully
+--------------------------------
+
+Cache Miss
+
+↓
+
+Database
+
+↓
+
+Cache
+
+↓
+
+Return
+
+Never fail request.
+
+------------------------------------------------------------
+
+30. Use Monitoring Dashboard
+----------------------------
+
+Redis Insight
+
+Grafana
+
+Prometheus
+
+Micrometer
+
+Spring Boot Actuator
+
+Monitor continuously.
+
+===========================================================

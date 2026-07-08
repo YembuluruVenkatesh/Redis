@@ -1,0 +1,55 @@
+Redis Basics
+      │
+      ▼
+CRUD Operations
+      │
+      ▼
+TTL & Cache Expiry
+      │
+      ▼
+Hashes
+      │
+      ▼
+Lists
+      │
+      ▼
+Sets
+      │
+      ▼
+Sorted Sets (Leaderboards)
+      │
+      ▼
+Transactions
+      │
+      ▼
+Distributed Locks
+      │
+      ▼
+Pub/Sub Messaging
+      │
+      ▼
+Redis Streams
+      │
+      ▼
+Consumer Groups
+      │
+      ▼
+ACK & Pending Messages
+      │
+      ▼
+Rate Limiting
+      │
+      ▼
+Session Management
+      │
+      ▼
+Spring Cache Annotations
+      │
+      ▼
+Cache Warm-up
+      │
+      ▼
+Redis Monitoring
+      │
+      ▼
+Production Best Practices

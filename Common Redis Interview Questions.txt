@@ -1,0 +1,49 @@
+1. Why Redis is faster than MySQL?
+
+2. Why Redis is single-threaded?
+
+3. Explain Redis persistence (RDB vs AOF).
+
+4. What is Cache Aside Pattern?
+
+5. Difference between @Cacheable and RedisTemplate?
+
+6. Difference between Pub/Sub and Streams?
+
+7. What is Consumer Group?
+
+8. What is ACK?
+
+9. What is Pending Entries List?
+
+10. What happens if consumer crashes?
+
+11. Explain Rate Limiting.
+
+12. Explain Distributed Lock.
+
+13. Explain Session Storage.
+
+14. Explain Cache Warm-up.
+
+15. Explain Cache Stampede.
+
+16. Explain Cache Penetration.
+
+17. Explain Cache Avalanche.
+
+18. Explain Cache Breakdown.
+
+19. Difference between Redis Cluster and Sentinel.
+
+20. How do you monitor Redis in production?
+
+21. What are Redis eviction policies?
+
+22. Why use SCAN instead of KEYS?
+
+23. How do you optimize Redis memory?
+
+24. Explain Redis Streams architecture.
+
+25. How would you design Redis for a large e-commerce system?
