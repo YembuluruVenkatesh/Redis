@@ -2,11 +2,13 @@ package com.example.productservice.service;
 
 import com.example.productservice.entity.Product;
 import com.example.productservice.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,54 +19,135 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
-
+    /**
+     * CREATE PRODUCT
+     */
     @Override
+    @Caching(
+            put = {
+                    @CachePut(
+                            value = "products",
+                            key = "#result.id")
+            },
+            evict = {
+                    @CacheEvict(
+                            value = "allProducts",
+                            allEntries = true)
+            }
+    )
     public Product save(Product product) {
 
-        log.info("Saving product into Database: {}", product);
+        Product saved = repository.save(product);
 
-        return repository.save(product);
+
+        log.info("======================================");
+        log.info("Product Saved Successfully");
+        log.info("Product Id   : {}", saved.getId());
+        log.info("Product Name : {}", saved.getName());
+        log.info("======================================");
+
+        return saved;
     }
 
+    /**
+     * GET PRODUCT BY ID
+     */
     @Override
-    @Cacheable(value = "products", key = "#id")
+    @Cacheable(
+            value = "products",
+            key = "#id")
     public Product getProduct(Long id) {
 
-        log.info("Cache MISS - Fetching Product {} from Database", id);
+        log.info("Fetching Product {} from Database", id);
 
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found : " + id));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Product Not Found : " + id));
     }
 
+    /**
+     * GET ALL PRODUCTS
+     */
     @Override
+    @Cacheable("allProducts")
     public List<Product> getAllProducts() {
 
-        log.info("Fetching all products from Database");
+        log.info("Fetching All Products From Database");
 
         return repository.findAll();
     }
 
+    /**
+     * UPDATE PRODUCT
+     */
     @Override
-    @CachePut(value = "products", key = "#id")
+    @Caching(
+            put = {
+                    @CachePut(
+                            value = "products",
+                            key = "#id")
+            },
+            evict = {
+                    @CacheEvict(
+                            value = "allProducts",
+                            allEntries = true)
+            }
+    )
     public Product update(Long id, Product product) {
 
-        log.info("Updating Product {} in Database and Redis Cache", id);
-
-        Product existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found : " + id));
+        Product existing =
+                repository.findById(id)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Product Not Found : " + id));
 
         existing.setName(product.getName());
         existing.setPrice(product.getPrice());
 
-        return repository.save(existing);
+        Product updated = repository.save(existing);
+
+
+        log.info("======================================");
+        log.info("Product Updated Successfully");
+        log.info("Product Id   : {}", updated.getId());
+        log.info("======================================");
+
+        return updated;
     }
 
+    /**
+     * DELETE PRODUCT
+     */
     @Override
-    @CacheEvict(value = "products", key = "#id")
+    @Caching(
+            evict = {
+
+                    @CacheEvict(
+                            value = "products",
+                            key = "#id"),
+
+                    @CacheEvict(
+                            value = "allProducts",
+                            allEntries = true)
+            }
+    )
     public void delete(Long id) {
 
-        log.info("Deleting Product {} from Database and Evicting Cache", id);
+        Product product =
+                repository.findById(id)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Product Not Found : " + id));
 
-        repository.deleteById(id);
+        repository.delete(product);
+
+
+
+        log.info("======================================");
+        log.info("Product Deleted Successfully");
+        log.info("Product Id : {}", id);
+        log.info("======================================");
     }
+
 }

@@ -1,0 +1,116 @@
+Redis Cluster & Sentinel:   
+-------------------------
+
+What is Redis Sentinel?
+
+Imagine this architecture.
+
+                 Spring Boot
+                      |
+                Redis Master
+               /      |      \
+              /       |       \
+         Replica1  Replica2  Replica3
+
+All writes go to the Master.
+
+SET product:1
+
+↓
+
+Master
+
+Replicas continuously copy data.
+
+Master
+   ↓
+Replica1
+
+Master
+   ↓
+Replica2
+
+
+Problem : 
+
+What happens if the Master crashes?
+
+Without Sentinel : 
+
+Application
+      ↓
+ Master ❌
+
+Everything fails.
+
+With Sentinel: 
+
+        Sentinel 1
+            |
+Sentinel2---+---Sentinel3
+
+          monitors
+
+Master
+
+Replicas
+
+When Master dies
+
+Sentinel automatically promotes
+
+Replica1
+
+↓
+
+NEW MASTER
+
+Application reconnects automatically.
+
+No manual work.
+-----------------------------------------------------------------------------------------------------------------
+
+What is Redis Cluster?
+
+
+Instead of one master - You have multiple masters.
+
+             Cluster
+
+Master1
+Master2
+Master3
+
+Each master owns part of the data.
+-------------------------------------------------------------------------------------------------------------------
+
+Sentinel vs Cluster
+
+Feature                  	Sentinel	          Cluster
+
+Purpose	                    High Availability	     Horizontal Scaling
+Multiple Masters          	❌	                    ✅
+Automatic Failover	        ✅	                    ✅
+Data Partitioning	        ❌	                    ✅
+Scale Memory	                ❌                         ✅
+Scale Writes	                ❌	                    ✅
+--------------------------------------------------------------------------------------------------------------------
+How Companies Use It
+
+For production systems, a common setup looks like this:
+
+                   Spring Boot Application
+                            |
+                  Lettuce Redis Client
+                            |
+                  Redis Cluster (3 Masters)
+                  /         |          \
+              Master1    Master2    Master3
+                 |           |           |
+             Replica1    Replica2    Replica3
+
+Benefits:
+
+High availability through replicas and automatic failover.
+Horizontal scaling by distributing keys across multiple masters.
+No application code changes when nodes fail or new nodes are added.

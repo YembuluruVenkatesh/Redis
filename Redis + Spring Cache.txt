@@ -1,0 +1,46 @@
+21 Redis + Spring Cache:
+
+What we'll implement
+POST   /products
+        ↓
+Database
+        ↓
+@CachePut
+        ↓
+Redis
+
+
+GET /products/{id}
+        ↓
+@Cacheable
+        ↓
+Redis ?
+      /     \
+Hit        Miss
+ |           |
+Return     Database
+              |
+            Redis
+
+
+PUT
+        ↓
+@CachePut
+        ↓
+Update DB
+        ↓
+Update Redis
+
+
+DELETE
+        ↓
+@CacheEvict
+        ↓
+Delete DB
+        ↓
+Delete Redis
+
+This is exactly how production applications cache entities.
+
+---------------------------------------------------------------------------------------------------------------------------
+

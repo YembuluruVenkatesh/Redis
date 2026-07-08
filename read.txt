@@ -62,4 +62,135 @@ docker compose up -d --build
 
 docker logs redis-cache
 docker exec -it product-service sh
+<<<<<<< Updated upstream
 docker compose up -d --build --force-recreate
+=======
+docker compose up -d --build --force-recreate
+
+
+Redis Learning Roadmap
+
+Here's the path I'd recommend:
+
+Step	Topic	Status
+✅ 1	Redis Installation (Docker)	Done
+✅ 2	RedisTemplate Configuration	Done
+✅ 3	Cache-Aside Pattern	Done
+✅ 4	CRUD + Redis Synchronization	Done
+✅ 5	Cache HIT / MISS Logging	Done
+🔜 6	Redis TTL (Expire Keys)	Next
+🔜 7	Manual Cache Eviction	Next
+🔜 8	Cache All Products	Next
+🔜 9	Cache Search Results	Next
+🔜 10	Redis Hash Operations	Next
+🔜 11	Redis Lists	Next
+🔜 12	Redis Sets	Next
+🔜 13	Redis Sorted Sets	Next
+🔜 14	Redis Transactions	Next
+🔜 15	Distributed Locking	Next
+🔜 16	Pub/Sub Messaging	Next
+🔜 17	Redis Streams ( XACK (Completed) ->  XPENDING (Inspect Pending Messages) -> Retry Failed Messages  -> XCLAIM / XAUTOCLAIM  -> Dead Letter Queue (DLQ))
+implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry handling. These features are what distinguish a demo from a robust event-processing system
+🔜 18 Rate Limiting
+🔜 19 Session Management / Session Storage
+🔜 20 Redis Cluster & Sentinel
+🔜 21 Redis + Spring Cache (@Cacheable, @CachePut, @CacheEvict)
+🔜 22 Cache Preloading (Warm-up)
+🔜 23 Monitoring Redis
+🔜 24 Redis Cluster & Sentinel
+🔜 25 Production Best Practices	Final OR Performance optimization and best practices
+
+
+The next logical step is to make your Streams production-ready by implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry handling. These features are what distinguish a demo from a robust event-processing system.
+
+
+
+Redis List Commands : Command	Purpose
+
+LPUSH	Insert at beginning
+RPUSH	Insert at end
+LPOP	Remove first
+RPOP	Remove last
+LRANGE	Read list
+LLEN	Size
+LINDEX	Get by index
+LTRIM	Keep only last N items
+
+Redis Set Commands : Command	Description
+
+SADD	        Add element
+SMEMBERS	Get all values
+SISMEMBER	Check if value exists
+SCARD	Count elements
+SREM	Remove element
+SUNION	Union of sets
+SINTER	Intersection
+SDIFF	Difference
+
+Redis Sorted Sets Commands : Command Purpose
+ZADD	Add member
+ZINCRBY	Increase score
+ZRANGE	Lowest → Highest
+ZREVRANGE	Highest → Lowest
+ZSCORE	Get score
+ZRANK	Rank
+ZREVRANK	Reverse Rank
+ZREM	Remove
+
+Redis Transaction :
+
+Where are Redis Transactions used?
+1. Banking
+Debit Account -> Credit Account -> Save Audit
+2. E-Commerce
+Decrease Stock -> Increase Sales -> Add Order-> Update Inventory
+3. Gaming
+Increase Score -> Update Leaderboard -> Save Achievement
+4. User Registration
+Create User -> Assign Role -> Save Session ->  Increment User Count
+
+http://localhost:8080/products/transaction  - > Transaction Executed Successfully
+docker exec -it redis-cache redis-cli
+KEYS *
+
+transaction:name
+transaction:version
+transaction:counter
+
+GET transaction:version   : 1.0
+GET transaction:counter   : 
+
+Client
+
+      │
+
+      ▼
+
+Controller
+
+      │
+
+      ▼
+
+Transaction Service
+
+      │
+
+      ▼
+
+MULTI
+
+SET name
+
+SET version
+
+INCR counter
+
+EXEC
+
+      │
+
+      ▼
+
+Redis
+>>>>>>> Stashed changes

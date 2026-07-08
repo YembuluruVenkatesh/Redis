@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -14,6 +16,9 @@ public class ProductController {
 
     private final ProductService service;
 
+    /**
+     * Create Product
+     */
     @PostMapping
     public Product save(@RequestBody Product product) {
 
@@ -26,6 +31,9 @@ public class ProductController {
         return savedProduct;
     }
 
+    /**
+     * Get Product By Id
+     */
     @GetMapping("/{id}")
     public Product get(@PathVariable Long id) {
 
@@ -38,6 +46,24 @@ public class ProductController {
         return product;
     }
 
+    /**
+     * Get All Products
+     */
+    @GetMapping
+    public List<Product> getAllProducts() {
+
+        log.info("Received request to fetch all products");
+
+        List<Product> products = service.getAllProducts();
+
+        log.info("Returning {} products", products.size());
+
+        return products;
+    }
+
+    /**
+     * Update Product
+     */
     @PutMapping("/{id}")
     public Product update(@PathVariable Long id,
                           @RequestBody Product product) {
@@ -51,6 +77,9 @@ public class ProductController {
         return updatedProduct;
     }
 
+    /**
+     * Delete Product
+     */
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
 
@@ -60,4 +89,5 @@ public class ProductController {
 
         log.info("Product deleted successfully with ID: {}", id);
     }
+
 }
