@@ -1,6 +1,7 @@
 21 Redis + Spring Cache:
 
 What we'll implement
+
 POST   /products
         ↓
 Database

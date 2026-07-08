@@ -1,0 +1,76 @@
+Cache Preloading (Warm-up):
+---------------------------
+
+What is Cache Warm-up?
+
+Imagine your application has 1 million products.
+
+After deployment,
+
+Redis = Empty
+
+The first user requesting
+
+GET /products/1
+
+must hit
+
+Redis Miss
+↓
+MySQL
+↓
+Store into Redis
+↓
+Return response
+
+The first few thousand users all hit the database.
+
+That creates a huge spike.
+
+Enterprise applications avoid this.
+
+They preload important data into Redis when the application starts.
+
+This is called
+
+Cache Warm-up or Cache Preloading
+
+--------------------------------------------------------------------------------------------------
+
+Our Architecture
+                Spring Boot Starts
+                        │
+                        ▼
+             CacheWarmupService
+                        │
+                        ▼
+          Read Products from MySQL
+                        │
+                        ▼
+      Store each Product into Redis Cache
+                        │
+                        ▼
+             Application Ready
+
+--------------------------------------------------------------------------------------------
+
+
+No Controller Required
+
+Because it runs automatically during startup using :  ApplicationRunner
+
+Startup Logs
+
+Starting Redis Cache Warm-up...
+
+Cached Product : 1 - Samsung S24
+
+Cached Product : 2 - iPhone 16
+
+Cached Product : 3 - MacBook Pro
+
+Cached Product : 4 - Redmi Note 14
+
+Cache Warm-up Completed
+
+Products Cached : 4
