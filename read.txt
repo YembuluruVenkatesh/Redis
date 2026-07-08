@@ -97,8 +97,7 @@ implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry
 🔜 21 Redis + Spring Cache (@Cacheable, @CachePut, @CacheEvict)
 🔜 22 Cache Preloading (Warm-up)
 🔜 23 Monitoring Redis
-🔜 24 Redis Cluster & Sentinel
-🔜 25 Production Best Practices	Final OR Performance optimization and best practices
+🔜 24 Production Best Practices	Final OR Performance optimization and best practices
 
 
 The next logical step is to make your Streams production-ready by implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry handling. These features are what distinguish a demo from a robust event-processing system.

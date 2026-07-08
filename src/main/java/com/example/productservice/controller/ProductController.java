@@ -1,7 +1,9 @@
 package com.example.productservice.controller;
 
+import com.example.productservice.dto.RedisInfo;
 import com.example.productservice.entity.Product;
 import com.example.productservice.service.ProductService;
+import com.example.productservice.service.RedisMonitoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService service;
+    private final RedisMonitoringService monitoringService;
 
     /**
      * Create Product
@@ -90,4 +93,10 @@ public class ProductController {
         log.info("Product deleted successfully with ID: {}", id);
     }
 
+    @GetMapping("/redis/info")
+    public RedisInfo info() {
+
+        return monitoringService.getInfo();
+
+    }
 }
