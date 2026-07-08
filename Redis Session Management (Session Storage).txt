@@ -1,0 +1,37 @@
+Redis Session Management (Session Storage)
+
+This is one of the most common enterprise Redis use cases.
+
+Instead of storing sessions inside JVM memory (which fails in clustered deployments), we store them in Redis.
+
+Client
+   │
+   ▼
+Spring Boot
+   │
+   ▼
+Redis
+   │
+   ├── Session Id
+   ├── Username
+   ├── Login Time
+   ├── Last Access Time
+   └── Expiration
+
+If your application has multiple instances:
+
+           User
+             │
+             ▼
+        Load Balancer
+        /     |      \
+       ▼      ▼       ▼
+ App-1   App-2   App-3
+      \    |    /
+        Redis
+
+Every instance reads the same session.
+
+This is why Redis Session is so popular.
+----------------------------------------------------------------------------------------------------------------
+

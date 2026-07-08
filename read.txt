@@ -53,6 +53,7 @@ SHOW DATABASES;
 docker exec -it redis-cache redis-cli
 PING
 KEYS *
+KEYS session:*
 
 
 docker compose down -v
