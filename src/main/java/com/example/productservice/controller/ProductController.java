@@ -4,10 +4,12 @@ import com.example.productservice.dto.PendingMessageInfo;
 import com.example.productservice.dto.PriceRequest;
 import com.example.productservice.entity.Product;
 import com.example.productservice.service.*;
+import jakarta.servlet.ServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Set;
@@ -28,6 +30,7 @@ public class ProductController {
     private final RedisLockService lockService;
     private final StreamMonitoringService streamMonitoringService;
     private final StreamRetryService streamRetryService;
+    private final RateLimiterService rateLimiterService;
 
     @PostMapping
     public Product save(@RequestBody Product product) {
@@ -304,4 +307,21 @@ public class ProductController {
         return "Retry completed.";
 
     }
+
+    @GetMapping("/rate-limit")
+    public String rateLimitTest(HttpServletRequest request) {
+
+        String clientId = request.getHeader("X-Forwarded-For");
+        //String client = "localhost";
+        if (clientId == null || clientId.isBlank()) {
+            clientId = request.getRemoteAddr();
+        }
+
+        log.info("Client IP : {}", clientId);
+
+        rateLimiterService.validateRequest(clientId);
+
+        return "Request Allowed";
+    }
+
 }

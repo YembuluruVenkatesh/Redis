@@ -1,0 +1,137 @@
+Redis Rate Limiting
+
+This feature is used by almost every API Gateway.
+
+Examples:
+
+Login API
+Payment API
+OTP API
+Password Reset API
+Public REST APIs
+AI APIs (OpenAI, Gemini, Claude)
+Banking APIs
+What we'll build
+
+We'll implement a Fixed Window Rate Limiter.
+
+Rule
+Maximum 5 requests
+per 60 seconds
+per client
+
+Example:
+
+Request 1  ✅
+Request 2  ✅
+Request 3  ✅
+Request 4  ✅
+Request 5  ✅
+Request 6  ❌ 429 Too Many Requests
+
+After 60 seconds:
+
+Counter resets
+
+Again
+
+Request 1 ✅
+
+------------------------------------------------------------------------------------------------
+
+Architecture:
+
+Client
+   │
+   ▼
+Spring Boot
+   │
+   ▼
+Redis
+   │
+   ├── INCR
+   ├── EXPIRE
+   └── Current Count
+
+Redis stores
+
+rate-limit:192.168.1.10
+
+Value
+
+5
+
+TTL
+
+60 sec
+
+Redis Commands: 
+
+Every request executes
+
+INCR rate-limit:192.168.1.10
+
+If first request
+
+EXPIRE rate-limit:192.168.1.10 60
+
+Very simple.
+
+Very fast.
+
+---------------------------------------------------------------------------------------------------------
+
+Testing
+
+GET  : http://localhost:8080/products/rate-limit
+
+Request 1 - 200 OK
+Request 2 - 200 OK
+Request 3 - 200 OK
+Request 4 - 200 OK
+Request 5 - 200 OK
+Request 6 - 429 Too Many Requests
+
+Response:
+
+{
+    "status":"429",
+    "error":"Too Many Requests. Try again later."
+}
+
+Redis
+
+Open Redis CLI:
+
+KEYS *
+
+You'll see something like:
+
+rate-limit:127.0.0.1
+
+Check its value:
+
+GET rate-limit:127.0.0.1
+
+Output:
+
+6
+
+Check TTL:
+
+TTL rate-limit:127.0.0.1
+
+Output:
+
+42
+
+After 60 seconds:
+
+GET rate-limit:127.0.0.1
+
+returns:
+
+(nil)
+
+The counter has expired and starts over automatically.
+
