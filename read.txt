@@ -45,6 +45,7 @@ Rate limiting
 
 
 
+
 docker exec -it mysql-db mysql -u springuser -p
 PWD :spring123
 SHOW DATABASES;
@@ -61,6 +62,9 @@ docker compose up -d --build
 
 docker logs redis-cache
 docker exec -it product-service sh
+<<<<<<< Updated upstream
+docker compose up -d --build --force-recreate
+=======
 docker compose up -d --build --force-recreate
 
 
@@ -90,9 +94,9 @@ implementing message acknowledgment (ACK), Pending Entries List (PEL), and retry
 🔜 18 Rate Limiting
 🔜 19 Session Management / Session Storage
 🔜 20 Redis Cluster & Sentinel
-🔜 21 Cache Preloading (Warm-up)
-🔜 22 Monitoring Redis
-🔜 23 Redis Cluster & Sentinel
+🔜 21 Redis + Spring Cache (@Cacheable, @CachePut, @CacheEvict)
+🔜 22 Cache Preloading (Warm-up)
+🔜 23 Monitoring Redis
 🔜 24 Production Best Practices	Final OR Performance optimization and best practices
 
 
@@ -188,3 +192,4 @@ EXEC
       ▼
 
 Redis
+>>>>>>> Stashed changes

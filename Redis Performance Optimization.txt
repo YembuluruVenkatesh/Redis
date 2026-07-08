@@ -1,0 +1,47 @@
+===========================================================
+          REDIS PERFORMANCE OPTIMIZATION
+===========================================================
+
+✔ Use String keys efficiently.
+
+✔ Keep keys short but meaningful.
+
+✔ Store only required fields.
+
+✔ Prefer Hash instead of multiple keys.
+
+✔ Use Pipeline for bulk operations.
+
+✔ Batch writes whenever possible.
+
+✔ Use MGET instead of multiple GETs.
+
+✔ Use HMGET instead of multiple HGETs.
+
+✔ Use SCAN instead of KEYS.
+
+✔ Use EXPIRE with every cache entry.
+
+✔ Use asynchronous processing where applicable.
+
+✔ Monitor memory fragmentation.
+
+✔ Enable connection pooling.
+
+✔ Monitor slowlog.
+
+✔ Use Redis Streams instead of polling.
+
+✔ Prefer Consumer Groups for scalability.
+
+✔ Avoid unnecessary serialization/deserialization.
+
+✔ Compress large payloads.
+
+✔ Keep cache hit ratio above 90%.
+
+✔ Monitor eviction count.
+
+✔ Monitor latency.
+
+===========================================================

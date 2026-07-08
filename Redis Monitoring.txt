@@ -1,0 +1,344 @@
+Redis Monitoring: 
+
+Why Monitoring?
+
+Imagine production.
+
+Redis suddenly becomes slow.
+
+Questions you'll immediately get:
+
+Is Redis running?
+Memory usage?
+Cache hit ratio?
+Connected clients?
+Number of keys?
+CPU load?
+Evictions?
+Expired keys?
+Uptime?
+Commands/sec?
+
+Without monitoring...
+
+You have no idea.
+
+-------------------------------------------------------------------------------------------
+
+Enterprise Architecture
+
+                Spring Boot
+
+                      │
+
+                      ▼
+
+             RedisMonitoringService
+
+                      │
+
+                      ▼
+
+              Redis INFO command
+
+                      │
+
+                      ▼
+
+          Collect Production Metrics
+
+                      │
+
+                      ▼
+
+            REST API / Monitoring
+
+------------------------------------------------------------------------------------------------
+What we'll build
+
+GET /redis/info
+
+Returns
+
+{
+  "redisVersion":"8.0.2",
+  "uptime":"12543 seconds",
+  "connectedClients":"4",
+  "usedMemory":"2.43M",
+  "totalKeys":"154",
+  "expiredKeys":"29",
+  "evictedKeys":"0"
+}
+
+Exactly like production dashboards.
+
+--------------------------------------------------------------------------------------------------
+
+GET http://localhost:8080/products/redis/info
+
+returns:
+
+{
+    "redisVersion": "7.2.14",
+    "uptime": "21",
+    "connectedClients": "1",
+    "usedMemory": "1007.61K",
+    "totalKeys": "32",
+    "expiredKeys": "24",
+    "evictedKeys": "0",
+    "redisMode": "standalone",
+    "role": "master",
+    "totalConnections": "3",
+    "totalCommandsProcessed": "80",
+    "instantaneousOpsPerSec": "0",
+    "keyspaceHits": "52",
+    "keyspaceMisses": "0",
+    "hitRatio": "100.00 %"
+}
+
+
+Field                    Meaning                                Your Value      Status
+---------------------------------------------------------------------------------------------------------
+Redis Version            Installed Redis version                7.2.14          ✅ Good
+
+Uptime                   Seconds Redis has been running         21              ✅ Expected after restart
+
+Connected Clients        Active clients connected               1               ✅ Good
+
+Used Memory              RAM consumed by Redis                  1007.61 KB      ✅ Very Low
+
+Total Keys               Number of keys stored                  32              ✅ Good
+
+Expired Keys             Keys automatically removed by TTL      24              ✅ Expected
+
+Evicted Keys             Keys removed because memory is full    0               ✅ Excellent
+
+Redis Mode               Standalone / Cluster                   standalone      ✅ Correct
+
+Role                     Master or Replica                      master          ✅ Correct
+
+Total Connections        Total client connections since start   3               ✅ Good
+
+Total Commands           Total Redis commands executed          80              ✅ Good
+
+Ops/Sec                  Current operations per second          0               ✅ Normal when idle
+
+Cache Hits               Data served from Redis                 52              ✅ Excellent
+
+Cache Misses             Data not found in Redis                0               ✅ Excellent
+
+Hit Ratio                Cache efficiency                       100.00 %        ⭐ Perfect
+
+===============================================================
+
+
+
+Interview Explanation
+1. Redis Version
+----------------
+Shows the installed Redis server version.
+
+Example:
+7.2.14
+
+Useful for checking compatibility with Spring Data Redis.
+
+------------------------------------------------------------
+
+2. Uptime
+---------
+Shows how long Redis has been running.
+
+Example:
+21 seconds
+
+Higher uptime indicates a stable Redis server.
+
+------------------------------------------------------------
+
+3. Connected Clients
+--------------------
+Number of active clients currently connected to Redis.
+
+Example:
+1
+
+Can include:
+- Spring Boot application
+- Redis CLI
+- Redis Insight
+
+------------------------------------------------------------
+
+4. Used Memory
+--------------
+Amount of RAM currently used by Redis.
+
+Example:
+1007.61 KB
+
+Useful for monitoring memory consumption.
+
+------------------------------------------------------------
+
+5. Total Keys
+-------------
+Total number of keys currently stored.
+
+Example:
+32
+
+Includes:
+- Product Cache
+- Sessions
+- Streams
+- Hashes
+- Sets
+- Lists
+- Sorted Sets
+
+------------------------------------------------------------
+
+6. Expired Keys
+---------------
+Number of keys automatically removed after TTL expiry.
+
+Example:
+24
+
+Shows TTL is working correctly.
+
+------------------------------------------------------------
+
+7. Evicted Keys
+---------------
+Number of keys removed because Redis ran out of memory.
+
+Example:
+0
+
+0 is ideal.
+
+High values indicate memory pressure.
+
+------------------------------------------------------------
+
+8. Redis Mode
+-------------
+Indicates deployment type.
+
+Possible values:
+
+standalone
+cluster
+sentinel
+
+Current:
+standalone
+
+------------------------------------------------------------
+
+9. Role
+-------
+Shows whether Redis is Master or Replica.
+
+Possible values:
+
+master
+slave
+
+Current:
+master
+
+------------------------------------------------------------
+
+10. Total Connections
+---------------------
+Total client connections received since Redis started.
+
+Example:
+3
+
+Useful for monitoring application traffic.
+
+------------------------------------------------------------
+
+11. Total Commands Processed
+----------------------------
+Total Redis commands executed since startup.
+
+Example:
+80
+
+Examples:
+GET
+SET
+DEL
+EXPIRE
+HGET
+XADD
+
+------------------------------------------------------------
+
+12. Operations Per Second (Ops/Sec)
+-----------------------------------
+Current Redis throughput.
+
+Example:
+0
+
+When application is idle:
+0
+
+Under heavy load:
+200
+500
+1000+
+
+------------------------------------------------------------
+
+13. Cache Hits
+--------------
+Number of requests successfully served from Redis.
+
+Example:
+52
+
+Higher is better.
+
+------------------------------------------------------------
+
+14. Cache Misses
+----------------
+Number of requests not found in Redis.
+
+Example:
+0
+
+Miss means application had to query the database.
+
+------------------------------------------------------------
+
+15. Hit Ratio
+-------------
+Measures cache efficiency.
+
+Formula:
+
+Hit Ratio =
+Hits / (Hits + Misses) × 100
+
+Example:
+
+Hits    = 52
+Misses  = 0
+
+Hit Ratio =
+
+52 / (52 + 0)
+=
+100%
+
+Excellent cache performance.
+
+===============================================================
